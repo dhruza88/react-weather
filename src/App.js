@@ -23,18 +23,18 @@ function App() {
     await fetch(`${WEATHER_API_URL}/weather?lat=${lats}&lon=${long}&appid=${WEATHER_API_KEY}&units=metric`)
     .then(res => res.json() )
     .then(result => {
-      setData(result)
-      console.log(result)
+      setData(result);
+      const is400 = result.cod === '400';
+      const hasWeather = result?.weather?.length || null;
+      if (!is400 && hasWeather) {
+        setCurrentWeather({ city: result.name, ...result });
+      }
     });
   }
   fetchData();
     console.log("Latitude is:", lats)
     console.log("Longitude is:", long)
   }, [lats, long]);
-
-  //TODO: Need initial setup function that if long and lat exists, to display your location, else allow your user to enter a city for display
-// on Load -> IF Lat && Long, run API search with Lat, Long
-//            ELSE wait for onSearchChange to GET Lat, Long from user
 
   
   const handleOnSearchChange = (searchData) => {
@@ -57,6 +57,7 @@ function App() {
       .then(async (response) => {
         const weatherResponse = await response[0].json();
         // const forcastResponse = await response[1].json();
+        console.log(weatherResponse);
 
         setCurrentWeather({ city: searchData.label, ...weatherResponse });
         // setForecast({ city: searchData.label, ...forcastResponse });
