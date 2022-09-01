@@ -9,22 +9,34 @@ function App() {
   const [currentWeather, setCurrentWeather] = useState(null);
   // const [forecast, setForecast] = useState(null);
 
-  const [lat, setLat] = useState([]);
+  const [lats, setLat] = useState([]);
   const [long, setLong] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
+    const fetchData = async () =>{
     navigator.geolocation.getCurrentPosition(function(position) {
       setLat(position.coords.latitude);
       setLong(position.coords.longitude);
     });
 
-    console.log("Latitude is:", lat)
+    await fetch(`${WEATHER_API_URL}/weather?lat=${lats}&lon=${long}&appid=${WEATHER_API_KEY}&units=metric`)
+    .then(res => res.json() )
+    .then(result => {
+      setData(result)
+      console.log(result)
+    });
+  }
+  fetchData();
+    console.log("Latitude is:", lats)
     console.log("Longitude is:", long)
-  }, [lat, long]);
+  }, [lats, long]);
 
   //TODO: Need initial setup function that if long and lat exists, to display your location, else allow your user to enter a city for display
 // on Load -> IF Lat && Long, run API search with Lat, Long
 //            ELSE wait for onSearchChange to GET Lat, Long from user
+
+  
   const handleOnSearchChange = (searchData) => {
     const [lat, lon] = searchData.value.split(" ");
 
@@ -33,6 +45,10 @@ function App() {
     );
     // const forecastFetch = fetch(
     //   `${WEATHER_API_URL}/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`
+    // );
+
+    // const currentWeatherFetch = fetch(
+    //   `${WEATHER_API_URL}/weather?lat=${lats}&lon=${long}&appid=${WEATHER_API_KEY}&units=metric`
     // );
 
 
